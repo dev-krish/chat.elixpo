@@ -30,20 +30,20 @@ export default function ChatPage() {
   const [bookmarksOpen, setBookmarksOpen] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const { messages, sendMessage, stop, status, setMessages, regenerate } = useChat({
-  id: sessionId ?? "new",
-  transport: new DefaultChatTransport({
-    api: "/api/chat",
-    body: { model, id: sessionId },
-    fetch: async (url, options) => {
-      const res = await fetch(url, options);
-      const convId = res.headers.get("x-conversation-id");
-      if (convId && convId !== sessionId) {
-        setSessionId(convId);
-      }
-      return res;
-    },
-  }),
-});
+    id: sessionId ?? "new",
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      body: { model, id: sessionId },
+      fetch: async (url, options) => {
+        const res = await fetch(url, options);
+        const convId = res.headers.get("x-conversation-id");
+        if (convId && convId !== sessionId) {
+          setSessionId(convId);
+        }
+        return res;
+      },
+    }),
+  });
 
   const isLoading = status === "streaming" || status === "submitted";
 
