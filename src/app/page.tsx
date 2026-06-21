@@ -2,9 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-
-const HeroCloud = dynamic(() => import('@/components/HeroCloud'), { ssr: false });
 
 /* ────────────────────── FAQ Data ────────────────────── */
 const faqItems = [
@@ -53,28 +50,23 @@ function FaqItem({ q, a, idx }: { q: string; a: string; idx: number }) {
   return (
     <button
       onClick={() => setOpen(!open)}
-      className="w-full text-left border-b border-[rgba(240,237,230,0.08)] py-5 group cursor-pointer"
+      className="w-full text-left border-b border-gray-100 py-5 group cursor-pointer"
     >
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <span className="font-mono text-xs tracking-wider text-[rgba(240,237,230,0.25)]">
-            {String(idx + 1).padStart(2, '0')}
-          </span>
-          <span className="text-[15px] font-medium text-[rgba(240,237,230,0.85)] group-hover:text-[#f0ede6] transition-colors">
-            {q}
-          </span>
-        </div>
+        <span className="text-[15px] font-medium text-gray-800 group-hover:text-gray-950 transition-colors">
+          {q}
+        </span>
         <svg
           width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
           strokeLinecap="round" strokeLinejoin="round"
-          className={`shrink-0 text-[rgba(240,237,230,0.3)] transition-transform duration-300 ${open ? 'rotate-45' : ''}`}
+          className={`shrink-0 text-gray-400 transition-transform duration-300 ${open ? 'rotate-45' : ''}`}
         >
           <line x1="12" y1="5" x2="12" y2="19" />
           <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
       </div>
       <div className={`overflow-hidden transition-all duration-300 ${open ? 'max-h-40 pt-3 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <p className="text-sm text-[rgba(240,237,230,0.4)] leading-relaxed pl-10 pr-8">{a}</p>
+        <p className="text-sm text-gray-500 leading-relaxed pr-8">{a}</p>
       </div>
     </button>
   );
@@ -88,108 +80,84 @@ export default function LandingPage() {
   const cta = useInView(0.1);
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a] text-[#f0ede6] overflow-hidden selection:bg-[#6366f1]/40">
-      {/* ════ Overlays (scanlines, noise, grain) — Rig AI style ════ */}
-      <div className="fixed inset-0 z-[100] pointer-events-none" style={{
-        background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px)'
-      }} />
-      <div className="fixed inset-0 z-[99] pointer-events-none opacity-[0.04]" style={{
-        backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")',
-        backgroundSize: '128px 128px'
-      }} />
+    <div className="min-h-screen bg-white text-gray-900">
 
-      {/* ═══════════════════ HERO — FULL ACCENT VIEWPORT ═══════════════════ */}
-      <section className="relative min-h-screen flex flex-col overflow-hidden bg-[#f0ede6]">
-        {/* ═══ Three.js volumetric cloud canvas ═══ */}
-        <HeroCloud />
-
-        {/* Huge watermark — z-[2] sits above cloud canvas but below content */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04] z-[2] select-none">
-          <span className="text-[28vw] font-bold tracking-tighter leading-none text-[#0a0a0a]" style={{ fontFamily: 'system-ui' }}>
-            ELIXPO
-          </span>
-        </div>
-
-        {/* Navigation */}
-        <header className="relative z-20">
-          <nav className="max-w-[calc(1200px+6rem)] mx-auto px-6 md:px-12 py-6 flex items-center justify-between">
-            <Link href="/" className="text-xl font-bold tracking-wider uppercase text-[#0a0a0a]">
-              Elixpo
-            </Link>
-            <ul className="hidden md:flex items-center gap-8 list-none">
-              <li>
-                <a href="#features" className="font-mono text-xs font-bold tracking-[0.05em] text-[#0a0a0a] opacity-70 hover:opacity-100 transition-opacity">
-                  Features
-                </a>
-              </li>
-              <li>
-                <a href="#faq" className="font-mono text-xs font-bold tracking-[0.05em] text-[#0a0a0a] opacity-70 hover:opacity-100 transition-opacity">
-                  FAQ
-                </a>
-              </li>
-              <li>
-                <Link
-                  href="/chat/new"
-                  className="font-mono text-xs font-bold tracking-[0.05em] text-[#f0ede6] bg-[#0a0a0a] px-5 py-3 hover:bg-[#1a1a2e] transition-colors"
-                  style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}
-                >
-                  Start Chatting
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </header>
-
-        {/* Hero Content */}
-        <div className="flex-1 flex flex-col items-center justify-center relative z-10 px-6 pb-24">
-          <div
-            ref={hero.ref}
-            className={`max-w-3xl text-center transition-all duration-[1000ms] ease-out ${
-              hero.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-          >
-            <h1
-              className="text-[clamp(2.5rem,6vw,5rem)] font-bold tracking-[-0.03em] leading-[1.05] mb-6 text-[#0a0a0a]"
-              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-            >
-              Build Smarter Conversations.<br />
-              <span className="text-emerald-600 drop-shadow-sm">Running on a powerful 3-tier CPU Architecture.</span>
-            </h1>
-            <p className="text-[#0a0a0a]/70 text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed" style={{ fontFamily: 'system-ui' }}>
-              A modern AI interface designed for speed, privacy, and
-              unparalleled multimodal capabilities. Your conversations, elevated.
-            </p>
-            <div className="flex items-center justify-center gap-4 flex-wrap">
-              <Link
-                href="/chat/new"
-                className="relative font-mono text-xs font-bold tracking-[0.05em] uppercase bg-[#0a0a0a] text-[#f0ede6] px-7 py-4 hover:bg-[#1a1a2e] transition-colors overflow-visible"
-                style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}
-              >
-                <div className="absolute -top-3 -right-3 bg-emerald-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-lg whitespace-nowrap z-10" style={{ clipPath: "none" }}>
-                  CPU-POWERED
-                </div>
-                Start Chatting
-              </Link>
-              <a
-                href="#features"
-                className="font-mono text-xs font-bold tracking-[0.05em] uppercase text-[#0a0a0a] border-2 border-[rgba(10,10,10,0.3)] px-7 py-4 hover:border-[#0a0a0a] transition-colors"
-                style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}
-              >
-                Explore Features
-              </a>
+      {/* ═══════════════════ HEADER ═══════════════════ */}
+      <header className="border-b border-gray-100 bg-white sticky top-0 z-30">
+        <nav className="max-w-6xl mx-auto px-6 py-3.5 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-md bg-gray-900 flex items-center justify-center">
+              <span className="text-white text-sm font-bold">E</span>
             </div>
+            <span className="text-[17px] font-semibold tracking-tight text-gray-900">Elixpo</span>
+          </Link>
+
+          <ul className="hidden md:flex items-center gap-1 list-none">
+            <li><a href="#features" className="text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md px-3 py-2 transition-colors">Features</a></li>
+            <li><a href="#architecture" className="text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md px-3 py-2 transition-colors">Architecture</a></li>
+            <li><a href="#faq" className="text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md px-3 py-2 transition-colors">FAQ</a></li>
+          </ul>
+
+          <div className="flex items-center gap-3">
+            <Link href="/chat/new" className="text-sm text-gray-600 hover:text-gray-900 px-3 py-2 hidden sm:block transition-colors">
+              Sign in
+            </Link>
+            <Link
+              href="/chat/new"
+              className="text-sm font-medium bg-violet-600 text-white rounded-full px-4 py-2 hover:bg-violet-700 transition-colors"
+            >
+              Start chatting
+            </Link>
+          </div>
+        </nav>
+      </header>
+
+      {/* ═══════════════════ HERO ═══════════════════ */}
+      <section className="border-b border-gray-100">
+        <div
+          ref={hero.ref}
+          className={`max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24 text-center transition-all duration-700 ease-out ${
+            hero.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+          }`}
+        >
+          <div className="inline-flex items-center gap-2 bg-violet-50 border border-violet-100 rounded-full px-3.5 py-1.5 mb-7">
+            <div className="w-1.5 h-1.5 bg-violet-500 rounded-full" />
+            <span className="text-xs font-medium text-violet-700">Multi-model AI · Live</span>
+          </div>
+
+          <h1 className="text-[clamp(2.25rem,5vw,3.75rem)] font-bold tracking-tight leading-[1.1] mb-5 text-gray-900">
+            Build smarter conversations.<br />
+            <span className="text-gray-400">With a powerful AI.</span>
+          </h1>
+          <p className="text-gray-500 text-base md:text-lg max-w-xl mx-auto mb-9 leading-relaxed">
+            A modern AI interface designed for speed, privacy, and unparalleled
+            multimodal capabilities. Your conversations, elevated.
+          </p>
+          <div className="flex items-center justify-center gap-3 flex-wrap">
+            <Link
+              href="/chat/new"
+              className="text-sm font-medium bg-violet-600 text-white rounded-full px-6 py-3 hover:bg-violet-700 transition-colors"
+            >
+              Start chatting
+            </Link>
+            <a
+              href="#features"
+              className="text-sm font-medium text-gray-700 border border-gray-200 rounded-full px-6 py-3 hover:bg-gray-50 hover:border-gray-300 transition-colors"
+            >
+              Explore features
+            </a>
           </div>
         </div>
 
         {/* Ticker */}
-        <div className="relative z-10 border-t border-[rgba(10,10,10,0.15)] overflow-hidden">
-          <div className="flex animate-[ticker_20s_linear_infinite] whitespace-nowrap py-3">
+        <div className="border-t border-gray-100 overflow-hidden bg-gray-50/60">
+          <div className="flex animate-[ticker_22s_linear_infinite] whitespace-nowrap py-3">
             {Array(2).fill(null).map((_, i) => (
               <div key={i} className="flex items-center gap-6 px-3 shrink-0">
-                {['3-Tier Models', 'GPT-4o & Claude', 'CPU Inference', 'Voice input', 'Web search', 'Pollinations AI', 'Real-time streaming', 'Markdown rendering'].map((t) => (
+                {['Multi-model AI', 'GPT-4o & Claude', 'File uploads', 'Voice input', 'Web search', 'Privacy-first', 'Real-time streaming', 'Markdown rendering'].map((t) => (
                   <React.Fragment key={`${i}-${t}`}>
-                    <span className="font-mono text-xs font-bold tracking-wide text-[#0a0a0a]/60 uppercase">{t}</span>
-                    <span className="text-[#0a0a0a]/30">&bull;</span>
+                    <span className="text-xs font-medium text-gray-500">{t}</span>
+                    <span className="text-gray-300">&bull;</span>
                   </React.Fragment>
                 ))}
               </div>
@@ -198,180 +166,138 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ════ Content lines (vertical guides like Rig AI) ════ */}
-      <div className="fixed inset-0 z-[1] pointer-events-none">
-        <div className="max-w-[calc(1200px+6rem)] mx-auto h-full relative px-6 md:px-12">
-          <div className="absolute left-6 md:left-12 top-0 bottom-0 w-px bg-[rgba(240,237,230,0.06)]" />
-          <div className="absolute right-6 md:right-12 top-0 bottom-0 w-px bg-[rgba(240,237,230,0.06)]" />
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[rgba(240,237,230,0.03)]" />
-        </div>
-      </div>
-
       {/* ═══════════════════ MAIN CONTENT ═══════════════════ */}
-      <main className="relative z-10">
-        {/* Section Divider */}
-        <div className="max-w-[calc(1200px+6rem)] mx-auto px-6 md:px-12 py-8">
-          <div className="h-px bg-[rgba(240,237,230,0.08)]" />
-        </div>
+      <main>
 
         {/* ══════ CAPABILITIES SECTION ══════ */}
-        <section className="max-w-[calc(1200px+6rem)] mx-auto px-6 md:px-12 py-20" id="features">
+        <section className="max-w-6xl mx-auto px-6 py-20" id="features">
           <div
             ref={features.ref}
-            className={`transition-all duration-[800ms] ease-out ${features.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            className={`transition-all duration-700 ease-out ${features.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
           >
-            {/* Section badge */}
-            <div className="flex items-center gap-2 mb-6">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <rect x="4" y="4" width="4" height="4" fill="#6366f1" />
-                <rect x="10" y="4" width="4" height="4" fill="#6366f1" />
-                <rect x="16" y="4" width="4" height="4" fill="#6366f1" />
-                <rect x="4" y="10" width="4" height="4" fill="#6366f1" />
-                <rect x="10" y="10" width="4" height="4" fill="#6366f1" />
-                <rect x="4" y="16" width="4" height="4" fill="#6366f1" />
-              </svg>
-              <span className="font-mono text-xs font-bold tracking-[0.15em] uppercase text-[rgba(240,237,230,0.5)]">
-                Capabilities
-              </span>
-            </div>
-
-            <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-bold tracking-[-0.03em] leading-[1.1] mb-5" style={{ fontFamily: 'system-ui' }}>
-              Designed by AI Experts for<br />
-              <span className="text-[rgba(240,237,230,0.35)]">Next-Generation Interfaces.</span>
+            <span className="text-xs font-medium text-violet-600 mb-3 block">Capabilities</span>
+            <h2 className="text-[clamp(1.75rem,3.5vw,2.75rem)] font-bold tracking-tight leading-[1.15] mb-4 text-gray-900">
+              Designed by AI experts for<br />
+              <span className="text-gray-400">next-generation interfaces.</span>
             </h2>
-            <p className="text-[rgba(240,237,230,0.4)] max-w-xl text-base leading-relaxed mb-14">
+            <p className="text-gray-500 max-w-xl text-[15px] leading-relaxed mb-14">
               We are a team of AI engineers and product designers passionate about building intelligent tools.
               Built from real-world use cases, tested, flexible, and designed for infinite scalability.
             </p>
 
-            {/* ── Animated Architecture Diagram ── */}
+            {/* ── Architecture Diagram ── */}
             <div className="mb-16 flex justify-center">
-              <svg viewBox="0 0 560 220" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-2xl">
-                <defs>
-                  <linearGradient id="trail-in" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#f0ede6" stopOpacity="0" />
-                    <stop offset="70%" stopColor="#f0ede6" stopOpacity="0.4" />
-                    <stop offset="100%" stopColor="#f0ede6" stopOpacity="0.8" />
-                  </linearGradient>
-                  <linearGradient id="trail-out" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#22c55e" stopOpacity="0" />
-                    <stop offset="70%" stopColor="#22c55e" stopOpacity="0.4" />
-                    <stop offset="100%" stopColor="#22c55e" stopOpacity="0.8" />
-                  </linearGradient>
-                  <path id="path-user-elixpo" d="M110,110 L160,110" />
-                  <path id="path-elixpo-resp" d="M400,110 L450,110" />
-                </defs>
+              <div className="w-full max-w-2xl bg-white border border-gray-200 rounded-2xl p-6">
+                <svg viewBox="0 0 560 220" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
+                  <defs>
+                    <linearGradient id="trail-h1-light" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#7c3aed" stopOpacity="0" />
+                      <stop offset="70%" stopColor="#7c3aed" stopOpacity="0.4" />
+                      <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.9" />
+                    </linearGradient>
+                    <linearGradient id="trail-h2-light" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#22c55e" stopOpacity="0" />
+                      <stop offset="70%" stopColor="#22c55e" stopOpacity="0.4" />
+                      <stop offset="100%" stopColor="#22c55e" stopOpacity="0.9" />
+                    </linearGradient>
+                    <path id="path-user-elixpo-l" d="M130,110 L193,110" />
+                    <path id="path-elixpo-resp-l" d="M353,110 L423,110" />
+                    <path id="path-cloud-down-l" d="M273,30 L273,55" />
+                  </defs>
 
-                {/* Machine boundary */}
-                <rect x="5" y="55" width="550" height="112" fill="none" stroke="rgba(240,237,230,0.08)" strokeWidth="1" strokeDasharray="4 4" />
-                <rect x="15" y="48" width="130" height="14" fill="#0a0a0a" />
-                <text x="20" y="58" fontFamily="monospace" fontSize="6" letterSpacing="2" fill="rgba(240,237,230,0.3)">CPU INFERENCE PIPELINE</text>
+                  <rect x="5" y="55" width="550" height="112" fill="none" stroke="rgba(150,150,150,0.2)" strokeWidth="1" strokeDasharray="4 4" />
+                  <rect x="15" y="48" width="96" height="14" fill="white" />
+                  <text x="20" y="58" fontFamily="ui-sans-serif" fontSize="7" letterSpacing="1" fill="rgba(120,120,120,0.6)">YOUR DEVICE</text>
 
-                {/* YOUR PROMPT (left) */}
-                <rect x="20" y="85" width="90" height="50" fill="rgba(10,10,10,0.95)" stroke="rgba(240,237,230,0.15)" strokeWidth="1" />
-                <text x="65" y="106" textAnchor="middle" fontFamily="monospace" fontSize="7" letterSpacing="1.5" fill="rgba(240,237,230,0.4)">YOUR PROMPT</text>
-                <text x="65" y="118" textAnchor="middle" fontFamily="monospace" fontSize="5.5" letterSpacing="1" fill="rgba(240,237,230,0.25)">TEXT · FILES · VOICE</text>
+                  <rect x="20" y="85" width="110" height="50" fill="white" stroke="rgba(150,150,150,0.25)" strokeWidth="1" rx="8" />
+                  <text x="75" y="106" textAnchor="middle" fontFamily="ui-sans-serif" fontSize="8" fontWeight="600" fill="rgba(60,60,60,0.8)">Your prompt</text>
+                  <text x="75" y="118" textAnchor="middle" fontFamily="ui-sans-serif" fontSize="6.5" fill="rgba(130,130,130,0.6)">Text · Files · Voice</text>
 
-                {/* Connector In */}
-                <line x1="110" y1="110" x2="160" y2="110" stroke="rgba(240,237,230,0.1)" strokeWidth="1" />
-                <line x1="110" y1="110" x2="160" y2="110" stroke="url(#trail-in)" strokeWidth="2">
-                  <animate attributeName="opacity" values="0.2;0.7;0.2" dur="2s" repeatCount="indefinite" />
-                </line>
-                <rect x="-1.5" y="-1.5" width="3" height="3" fill="#f0ede6">
-                  <animateMotion dur="2s" repeatCount="indefinite"><mpath href="#path-user-elixpo" /></animateMotion>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.8;1" dur="2s" repeatCount="indefinite" />
-                </rect>
+                  <line x1="130" y1="110" x2="193" y2="110" stroke="rgba(124,58,237,0.15)" strokeWidth="1" />
+                  <line x1="130" y1="110" x2="193" y2="110" stroke="url(#trail-h1-light)" strokeWidth="2">
+                    <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2s" repeatCount="indefinite" />
+                  </line>
+                  <rect x="-1.5" y="-1.5" width="3" height="3" fill="#7c3aed">
+                    <animateMotion dur="2s" repeatCount="indefinite"><mpath href="#path-user-elixpo-l" /></animateMotion>
+                    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.8;1" dur="2s" repeatCount="indefinite" />
+                  </rect>
 
-                {/* 3-TIER ARCHITECTURE */}
-                <rect x="160" y="65" width="240" height="90" fill="none" stroke="rgba(240,237,230,0.05)" strokeWidth="1" />
-                
-                {/* Tier: FREE */}
-                <rect x="170" y="75" width="220" height="20" fill="rgba(16,185,129,0.03)" stroke="rgba(16,185,129,0.3)" strokeWidth="1" />
-                <rect x="170" y="75" width="30" height="20" fill="rgba(16,185,129,0.1)" />
-                <text x="185" y="88" textAnchor="middle" fontFamily="monospace" fontSize="6" letterSpacing="1" fill="#34d399" fontWeight="bold">FREE</text>
-                <text x="210" y="88" fontFamily="monospace" fontSize="6" fill="rgba(240,237,230,0.6)">GPT-5 Mini · Mistral · DeepSeek · Gemini Flash</text>
+                  <rect x="193" y="63" width="160" height="94" fill="white" stroke="rgba(124,58,237,0.3)" strokeWidth="1.5" rx="10" />
+                  <text x="274.5" y="93" textAnchor="middle" fontFamily="ui-sans-serif" fontSize="13" fontWeight="700" fill="#1f1147">Elixpo</text>
+                  <text x="273" y="109" textAnchor="middle" fontFamily="ui-sans-serif" fontSize="6.5" fill="#7c3aed">Multi-model AI</text>
+                  <line x1="210" y1="130" x2="336" y2="130" stroke="rgba(150,150,150,0.15)" strokeWidth="0.5" />
+                  <text x="230" y="145" textAnchor="middle" fontFamily="ui-sans-serif" fontSize="6" fill="rgba(100,100,100,0.55)">GPT-4o</text>
+                  <text x="273" y="145" textAnchor="middle" fontFamily="ui-sans-serif" fontSize="6" fill="rgba(100,100,100,0.55)">Claude</text>
+                  <text x="316" y="145" textAnchor="middle" fontFamily="ui-sans-serif" fontSize="6" fill="rgba(100,100,100,0.55)">Gemini</text>
 
-                {/* Tier: PRO */}
-                <rect x="170" y="100" width="220" height="20" fill="rgba(245,158,11,0.03)" stroke="rgba(245,158,11,0.3)" strokeWidth="1" />
-                <rect x="170" y="100" width="30" height="20" fill="rgba(245,158,11,0.1)" />
-                <text x="185" y="113" textAnchor="middle" fontFamily="monospace" fontSize="6" letterSpacing="1" fill="#fbbf24" fontWeight="bold">PRO</text>
-                <text x="210" y="113" fontFamily="monospace" fontSize="6" fill="rgba(240,237,230,0.6)">GPT-5.2 · Gemini 3 Flash · Claude Sonnet</text>
+                  <line x1="353" y1="110" x2="423" y2="110" stroke="rgba(34,197,94,0.15)" strokeWidth="1" />
+                  <line x1="353" y1="110" x2="423" y2="110" stroke="url(#trail-h2-light)" strokeWidth="2">
+                    <animate attributeName="opacity" values="0.2;0.8;0.2" dur="2s" begin="1s" repeatCount="indefinite" />
+                  </line>
+                  <rect x="-1.5" y="-1.5" width="3" height="3" fill="#22c55e">
+                    <animateMotion dur="2s" begin="1s" repeatCount="indefinite"><mpath href="#path-elixpo-resp-l" /></animateMotion>
+                    <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.8;1" dur="2s" begin="1s" repeatCount="indefinite" />
+                  </rect>
 
-                {/* Tier: MAX */}
-                <rect x="170" y="125" width="220" height="20" fill="rgba(139,92,246,0.03)" stroke="rgba(139,92,246,0.3)" strokeWidth="1" />
-                <rect x="170" y="125" width="30" height="20" fill="rgba(139,92,246,0.1)" />
-                <text x="185" y="138" textAnchor="middle" fontFamily="monospace" fontSize="6" letterSpacing="1" fill="#a78bfa" fontWeight="bold">MAX</text>
-                <text x="210" y="138" fontFamily="monospace" fontSize="6" fill="rgba(240,237,230,0.6)">Claude Opus · Gemini 3.1 Pro · Grok Reasoning</text>
+                  <rect x="423" y="85" width="120" height="50" fill="white" stroke="rgba(150,150,150,0.25)" strokeWidth="1" rx="8" />
+                  <text x="483" y="106" textAnchor="middle" fontFamily="ui-sans-serif" fontSize="8" fontWeight="600" fill="rgba(60,60,60,0.8)">Response</text>
+                  <text x="483" y="118" textAnchor="middle" fontFamily="ui-sans-serif" fontSize="6.5" fill="#22c55e">Streaming · Fast</text>
 
-                {/* Vertical active flow indicators */}
-                <circle cx="165" cy="110" r="2" fill="#22c55e">
-                  <animate attributeName="opacity" values="0.3;1;0.3" dur="1s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="395" cy="110" r="2" fill="#22c55e">
-                  <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite" />
-                </circle>
+                  <rect x="213" y="2" width="120" height="28" fill="white" stroke="rgba(150,150,150,0.2)" strokeWidth="1" rx="6" />
+                  <text x="273" y="18" textAnchor="middle" fontFamily="ui-sans-serif" fontSize="7" fill="rgba(120,120,120,0.6)">Telemetry</text>
 
-                {/* Connector Out */}
-                <line x1="400" y1="110" x2="450" y2="110" stroke="rgba(34,197,94,0.15)" strokeWidth="1" />
-                <line x1="400" y1="110" x2="450" y2="110" stroke="url(#trail-out)" strokeWidth="2">
-                  <animate attributeName="opacity" values="0.2;0.7;0.2" dur="2s" begin="1s" repeatCount="indefinite" />
-                </line>
-                <rect x="-1.5" y="-1.5" width="3" height="3" fill="#22c55e">
-                  <animateMotion dur="2s" begin="1s" repeatCount="indefinite"><mpath href="#path-elixpo-resp" /></animateMotion>
-                  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.8;1" dur="2s" begin="1s" repeatCount="indefinite" />
-                </rect>
+                  <line x1="273" y1="30" x2="273" y2="63" stroke="#ef4444" strokeWidth="0.5" strokeDasharray="3 5" opacity="0.5" />
+                  <rect x="-1.5" y="-1.5" width="3" height="3" fill="#ef4444">
+                    <animateMotion dur="1.5s" repeatCount="indefinite"><mpath href="#path-cloud-down-l" /></animateMotion>
+                    <animate attributeName="opacity" values="0.8;0.8;0" keyTimes="0;0.6;1" dur="1.5s" repeatCount="indefinite" />
+                  </rect>
 
-                {/* RESPONSE (right) */}
-                <rect x="450" y="85" width="90" height="50" fill="rgba(10,10,10,0.95)" stroke="rgba(240,237,230,0.15)" strokeWidth="1" />
-                <text x="495" y="106" textAnchor="middle" fontFamily="monospace" fontSize="7" letterSpacing="1.5" fill="rgba(240,237,230,0.4)">RESPONSE</text>
-                <text x="495" y="118" textAnchor="middle" fontFamily="monospace" fontSize="5.5" letterSpacing="1" fill="#22c55e">STREAMING · FAST</text>
+                  <line x1="267" y1="40" x2="279" y2="52" stroke="#ef4444" strokeWidth="1.5" />
+                  <line x1="279" y1="40" x2="267" y2="52" stroke="#ef4444" strokeWidth="1.5" />
 
-                {/* Privacy label */}
-                <text x="280" y="195" textAnchor="middle" fontFamily="monospace" fontSize="6" letterSpacing="2" fill="rgba(240,237,230,0.2)">ZERO TELEMETRY · POLLINATIONS.AI · CPU OPTIMIZED</text>
-              </svg>
+                  <text x="273" y="195" textAnchor="middle" fontFamily="ui-sans-serif" fontSize="6.5" letterSpacing="0.5" fill="rgba(130,130,130,0.55)">Zero telemetry · Your data stays local</text>
+                </svg>
+              </div>
             </div>
 
-            {/* Feature Cards — Rig AI chamfered style */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-[rgba(240,237,230,0.08)]">
+            {/* Feature Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 {
-                  label: 'Privacy & security',
-                  num: '001',
                   title: 'Your data stays yours.',
                   desc: 'End-to-end encryption for every conversation. Never used to train models. Delete your history at any time. Privacy is foundational.',
+                  bg: 'bg-violet-50/70',
+                  border: 'border-violet-100',
+                  dot: 'bg-violet-500',
                 },
                 {
-                  label: 'Multi-model',
-                  num: '002',
                   title: 'One interface, every model.',
                   desc: 'GPT-4o, Claude, Gemini, and more. Switch models mid-conversation to get the best response for your specific task.',
+                  bg: 'bg-sky-50/70',
+                  border: 'border-sky-100',
+                  dot: 'bg-sky-500',
                 },
                 {
-                  label: 'Multimodal',
-                  num: '003',
                   title: 'Beyond text conversations.',
                   desc: 'Share files, voice notes, code snippets, and images seamlessly. Elixpo understands multiple formats and context simultaneously.',
+                  bg: 'bg-emerald-50/70',
+                  border: 'border-emerald-100',
+                  dot: 'bg-emerald-500',
                 },
                 {
-                  label: 'Architecture',
-                  num: '004',
-                  title: 'Runs on CPU. Seriously.',
-                  desc: 'No expensive GPU clusters required. Elixpo leverages Pollinations optimized CPU inference pipeline for fast, cost-effective AI generation across all model tiers.',
+                  title: 'Streaming at full speed.',
+                  desc: 'Server-sent events deliver responses as they are generated. No waiting for completion. Every token arrives the instant it is ready.',
+                  bg: 'bg-rose-50/70',
+                  border: 'border-rose-100',
+                  dot: 'bg-rose-500',
                 },
               ].map((card) => (
-                <div key={card.num} className="bg-[#0a0a0a] p-8 md:p-10 group hover:bg-[rgba(240,237,230,0.02)] transition-colors duration-300">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-mono text-[11px] font-bold tracking-[0.15em] uppercase text-[rgba(240,237,230,0.35)]">
-                      {card.label}
-                    </span>
-                    <span className="font-mono text-[11px] tracking-[0.1em] text-[rgba(240,237,230,0.2)]">
-                      {card.num}
-                    </span>
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold tracking-[-0.02em] mb-3 text-[#f0ede6]" style={{ fontFamily: 'system-ui' }}>
+                <div key={card.title} className={`${card.bg} border ${card.border} rounded-2xl p-7 hover:shadow-sm transition-shadow`}>
+                  <div className={`w-2 h-2 rounded-full ${card.dot} mb-4`} />
+                  <h3 className="text-lg font-semibold tracking-tight mb-2 text-gray-900">
                     {card.title}
                   </h3>
-                  <p className="text-sm text-[rgba(240,237,230,0.4)] leading-relaxed">
+                  <p className="text-[14px] text-gray-500 leading-relaxed">
                     {card.desc}
                   </p>
                 </div>
@@ -380,89 +306,120 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Section Divider */}
-        <div className="max-w-[calc(1200px+6rem)] mx-auto px-6 md:px-12 py-4">
-          <div className="h-px bg-[rgba(240,237,230,0.08)]" />
-        </div>
+        {/* ══════ 3-TIER CPU ARCHITECTURE SECTION ══════ */}
+        <section className="border-t border-gray-100 bg-gray-50/40">
+          <div className="max-w-6xl mx-auto px-6 py-20" id="architecture">
+            <span className="text-xs font-medium text-violet-600 mb-3 block">Infrastructure</span>
+            <h2 className="text-[clamp(1.75rem,3.5vw,2.75rem)] font-bold tracking-tight leading-[1.15] mb-4 text-gray-900">
+              Powered by a 3-tier<br />
+              <span className="text-gray-400">CPU architecture.</span>
+            </h2>
+            <p className="text-gray-500 max-w-xl text-[15px] leading-relaxed mb-14">
+              Elixpo runs on a purpose-built three-layer compute stack — each tier independently scalable,
+              so your conversations stay fast regardless of load.
+            </p>
+
+            <div className="space-y-4 max-w-3xl">
+              {[
+                {
+                  tier: 'Tier 01 · Presentation',
+                  title: 'Interface & delivery layer',
+                  desc: 'The front-facing layer serves the UI from globally distributed edge nodes. Static assets, routing, and session initiation happen here — milliseconds from the user, always.',
+                  tags: ['Next.js', 'Edge Runtime', 'CDN Cache', 'TLS 1.3'],
+                  dot: 'bg-sky-500',
+                  tagBg: 'bg-sky-50 text-sky-700 border-sky-100',
+                },
+                {
+                  tier: 'Tier 02 · Application',
+                  title: 'AI orchestration engine',
+                  desc: 'The brain of Elixpo. Incoming prompts are parsed, enriched with context, and routed to the optimal model — GPT-4o, Claude, Gemini — in real time. Streaming, tool calls, and file handling all live here.',
+                  tags: ['Model Router', 'Stream SSE', 'Context Engine', 'Tool Calls'],
+                  dot: 'bg-violet-500',
+                  tagBg: 'bg-violet-50 text-violet-700 border-violet-100',
+                },
+                {
+                  tier: 'Tier 03 · Data',
+                  title: 'Encrypted data layer',
+                  desc: 'All conversation history, user preferences, and uploaded files are encrypted at rest and never shared across accounts. The data tier is isolated from the public internet — fully private, fully yours.',
+                  tags: ['E2E Encryption', 'KV Store', 'Cloudflare D1', 'Zero Telemetry'],
+                  dot: 'bg-rose-500',
+                  tagBg: 'bg-rose-50 text-rose-700 border-rose-100',
+                },
+              ].map((row) => (
+                <div key={row.tier} className="bg-white border border-gray-200 rounded-2xl p-6 hover:border-gray-300 transition-colors">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={`w-1.5 h-1.5 rounded-full ${row.dot}`} />
+                    <span className="text-xs font-medium text-gray-400">{row.tier}</span>
+                  </div>
+                  <h3 className="text-base font-semibold text-gray-900 mb-1.5">{row.title}</h3>
+                  <p className="text-[14px] text-gray-500 leading-relaxed mb-4">{row.desc}</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {row.tags.map(tag => (
+                      <span key={tag} className={`text-[11px] font-medium px-2.5 py-1 rounded-full border ${row.tagBg}`}>{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <p className="text-center text-xs text-gray-400 mt-10">
+              Each tier scales independently · Zero single points of failure
+            </p>
+          </div>
+        </section>
 
         {/* ══════ PARTNER SECTION ══════ */}
-        <section className="max-w-[calc(1200px+6rem)] mx-auto px-6 md:px-12 py-16">
+        <section className="max-w-6xl mx-auto px-6 py-12 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <span className="font-mono text-[11px] font-bold tracking-[0.15em] uppercase text-[rgba(240,237,230,0.3)] block mb-3">
+              <span className="text-xs text-gray-400 block mb-2">
                 Powering next-generation AI workflows
               </span>
-              <div className="flex items-center gap-3">
-                <span className="text-xl font-bold tracking-tight text-[rgba(240,237,230,0.5)]">
-                  Pollinations.ai
-                </span>
-                <span className="bg-[rgba(240,237,230,0.08)] px-2 py-0.5 rounded text-[10px] font-mono tracking-wider text-[rgba(240,237,230,0.6)]">
-                  CPU-POWERED
-                </span>
-              </div>
-              <p className="text-sm text-[rgba(240,237,230,0.4)] mt-2">Running on CPU · 3 Model Tiers</p>
+              <span className="text-lg font-semibold text-gray-700">
+                Pollinations.ai
+              </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-emerald-500 animate-pulse" />
-              <span className="font-mono text-[11px] font-bold tracking-[0.1em] text-[rgba(240,237,230,0.4)] uppercase">
-                Active
+              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+              <span className="text-xs font-medium text-gray-500">
+                All systems operational
               </span>
             </div>
           </div>
         </section>
 
-        {/* Section Divider */}
-        <div className="max-w-[calc(1200px+6rem)] mx-auto px-6 md:px-12 py-4">
-          <div className="h-px bg-[rgba(240,237,230,0.08)]" />
-        </div>
-
         {/* ══════ FAQ SECTION ══════ */}
-        <section className="max-w-[calc(1200px+6rem)] mx-auto px-6 md:px-12 py-20" id="faq">
+        <section className="max-w-6xl mx-auto px-6 py-20" id="faq">
           <div
             ref={faq.ref}
-            className={`transition-all duration-[800ms] ease-out ${faq.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            className={`transition-all duration-700 ease-out ${faq.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
           >
             <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-16 items-start">
               <div>
-                {/* Section badge */}
-                <div className="flex items-center gap-2 mb-6">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <rect x="6" y="4" width="4" height="4" fill="#6366f1" />
-                    <rect x="14" y="4" width="4" height="4" fill="#6366f1" />
-                    <rect x="10" y="10" width="4" height="4" fill="#6366f1" />
-                    <rect x="6" y="16" width="4" height="4" fill="#6366f1" />
-                    <rect x="14" y="16" width="4" height="4" fill="#6366f1" />
-                  </svg>
-                  <span className="font-mono text-xs font-bold tracking-[0.15em] uppercase text-[rgba(240,237,230,0.5)]">
-                    FAQ
-                  </span>
-                </div>
-
-                <h2 className="text-3xl md:text-4xl font-bold tracking-[-0.03em] leading-tight mb-5" style={{ fontFamily: 'system-ui' }}>
-                  Frequently Asked<br />
-                  <span className="text-[rgba(240,237,230,0.35)]">Questions.</span>
+                <span className="text-xs font-medium text-violet-600 mb-3 block">FAQ</span>
+                <h2 className="text-3xl font-bold tracking-tight leading-tight mb-4 text-gray-900">
+                  Frequently asked<br />
+                  <span className="text-gray-400">questions.</span>
                 </h2>
-                <p className="text-[rgba(240,237,230,0.4)] text-sm leading-relaxed mb-8">
+                <p className="text-gray-500 text-[14px] leading-relaxed mb-7">
                   Everything you need to know about Elixpo Chat. Can not find the answer you are looking for?
                 </p>
                 <div className="flex items-center gap-3 flex-wrap">
                   <Link
                     href="#"
-                    className="font-mono text-[11px] font-bold tracking-[0.05em] uppercase px-5 py-3 bg-[rgba(240,237,230,0.04)] border border-[rgba(240,237,230,0.1)] text-[rgba(240,237,230,0.6)] hover:text-[#f0ede6] hover:bg-[rgba(240,237,230,0.08)] transition-all"
-                    style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
+                    className="text-sm font-medium px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-colors"
                   >
                     Documentation
                   </Link>
                   <Link
                     href="#"
-                    className="font-mono text-[11px] font-bold tracking-[0.05em] uppercase px-5 py-3 bg-[#6366f1] text-[#f0ede6] hover:bg-[#5b5bd6] transition-colors"
-                    style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))' }}
+                    className="text-sm font-medium px-5 py-2.5 bg-violet-600 text-white rounded-full hover:bg-violet-700 transition-colors"
                   >
-                    Ask Question
+                    Ask question
                   </Link>
                 </div>
               </div>
-              <div className="border-t border-[rgba(240,237,230,0.08)] md:border-t-0">
+              <div>
                 {faqItems.map((item, idx) => (
                   <FaqItem key={item.q} q={item.q} a={item.a} idx={idx} />
                 ))}
@@ -471,84 +428,76 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Section Divider */}
-        <div className="max-w-[calc(1200px+6rem)] mx-auto px-6 md:px-12 py-4">
-          <div className="h-px bg-[rgba(240,237,230,0.08)]" />
-        </div>
-
         {/* ══════ CTA SECTION ══════ */}
-        <section className="max-w-[calc(1200px+6rem)] mx-auto px-6 md:px-12 py-24">
+        <section className="max-w-6xl mx-auto px-6 pb-24">
           <div
             ref={cta.ref}
-            className={`relative border border-[rgba(240,237,230,0.1)] p-12 md:p-20 text-center overflow-hidden transition-all duration-[800ms] ease-out ${cta.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+            className={`bg-gray-50 border border-gray-100 rounded-3xl p-12 md:p-20 text-center transition-all duration-700 ease-out ${cta.visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
           >
-            {/* Top glow line */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-px bg-gradient-to-r from-transparent via-[#6366f1]/50 to-transparent" />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-32 bg-gradient-to-b from-[#6366f1]/[0.06] to-transparent blur-[60px]" />
-
-            <div className="relative z-10">
-              <h2 className="text-3xl md:text-5xl font-bold tracking-[-0.03em] mb-5" style={{ fontFamily: 'system-ui' }}>
-                Ready to Build Your AI<br />
-                <span className="text-[rgba(240,237,230,0.35)]">Chat Experience?</span>
-              </h2>
-              <p className="text-[rgba(240,237,230,0.4)] text-base max-w-md mx-auto mb-10 leading-relaxed">
-                Start chatting with Elixpo AI today and experience the future of conversational interfaces.
-              </p>
-              <div className="flex items-center justify-center gap-4 flex-wrap">
-                <Link
-                  href="/chat"
-                  className="font-mono text-xs font-bold tracking-[0.05em] uppercase bg-[#6366f1] text-[#f0ede6] px-7 py-4 hover:bg-[#5b5bd6] transition-colors"
-                  style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}
-                >
-                  Open App
-                </Link>
-                <Link
-                  href="#"
-                  className="font-mono text-xs font-bold tracking-[0.05em] uppercase text-[rgba(240,237,230,0.6)] border border-[rgba(240,237,230,0.12)] px-7 py-4 hover:text-[#f0ede6] hover:border-[rgba(240,237,230,0.25)] transition-all"
-                  style={{ clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))' }}
-                >
-                  Join Community
-                </Link>
-              </div>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-5 text-gray-900">
+              Ready to build your AI<br />
+              <span className="text-gray-400">chat experience?</span>
+            </h2>
+            <p className="text-gray-500 text-base max-w-md mx-auto mb-9 leading-relaxed">
+              Start chatting with Elixpo AI today and experience the future of conversational interfaces.
+            </p>
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <Link
+                href="/chat"
+                className="text-sm font-medium bg-violet-600 text-white rounded-full px-6 py-3 hover:bg-violet-700 transition-colors"
+              >
+                Open app
+              </Link>
+              <Link
+                href="#"
+                className="text-sm font-medium text-gray-700 border border-gray-200 bg-white rounded-full px-6 py-3 hover:bg-gray-50 hover:border-gray-300 transition-colors"
+              >
+                Join community
+              </Link>
             </div>
           </div>
         </section>
       </main>
 
       {/* ════════ Footer ════════ */}
-      <footer className="relative z-10 border-t border-[rgba(240,237,230,0.08)] bg-[#0a0a0a]">
-        <div className="max-w-[calc(1200px+6rem)] mx-auto px-6 md:px-12 py-12">
+      <footer className="border-t border-gray-100">
+        <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-8">
             <div>
-              <span className="text-lg font-bold tracking-wider uppercase block mb-3">Elixpo</span>
-              <p className="text-[rgba(240,237,230,0.4)] text-sm max-w-[280px] leading-relaxed">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-6 h-6 rounded-md bg-gray-900 flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">E</span>
+                </div>
+                <span className="text-base font-semibold text-gray-900">Elixpo</span>
+              </div>
+              <p className="text-gray-500 text-sm max-w-[280px] leading-relaxed">
                 Next-generation AI interface. Multi-model, privacy-first, beautifully designed.
               </p>
             </div>
             <div>
-              <h3 className="font-mono text-[11px] font-bold tracking-[0.15em] uppercase text-[rgba(240,237,230,0.35)] mb-4">Product</h3>
-              <ul className="space-y-2">
-                <li><Link href="/chat" className="text-sm text-[rgba(240,237,230,0.5)] hover:text-[#6366f1] transition-colors">Chat</Link></li>
-                <li><a href="#features" className="text-sm text-[rgba(240,237,230,0.5)] hover:text-[#6366f1] transition-colors">Features</a></li>
-                <li><a href="#faq" className="text-sm text-[rgba(240,237,230,0.5)] hover:text-[#6366f1] transition-colors">FAQ</a></li>
+              <h3 className="text-xs font-medium text-gray-400 mb-4">Product</h3>
+              <ul className="space-y-2.5">
+                <li><Link href="/chat" className="text-sm text-gray-600 hover:text-violet-600 transition-colors">Chat</Link></li>
+                <li><a href="#features" className="text-sm text-gray-600 hover:text-violet-600 transition-colors">Features</a></li>
+                <li><a href="#faq" className="text-sm text-gray-600 hover:text-violet-600 transition-colors">FAQ</a></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-mono text-[11px] font-bold tracking-[0.15em] uppercase text-[rgba(240,237,230,0.35)] mb-4">Legal</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-sm text-[rgba(240,237,230,0.5)] hover:text-[#6366f1] transition-colors">Privacy</a></li>
-                <li><a href="#" className="text-sm text-[rgba(240,237,230,0.5)] hover:text-[#6366f1] transition-colors">Terms</a></li>
-                <li><a href="#" className="text-sm text-[rgba(240,237,230,0.5)] hover:text-[#6366f1] transition-colors">Contact</a></li>
+              <h3 className="text-xs font-medium text-gray-400 mb-4">Legal</h3>
+              <ul className="space-y-2.5">
+                <li><a href="#" className="text-sm text-gray-600 hover:text-violet-600 transition-colors">Privacy</a></li>
+                <li><a href="#" className="text-sm text-gray-600 hover:text-violet-600 transition-colors">Terms</a></li>
+                <li><a href="#" className="text-sm text-gray-600 hover:text-violet-600 transition-colors">Contact</a></li>
               </ul>
             </div>
           </div>
-          <div className="flex items-center justify-between mt-12 pt-6 border-t border-[rgba(240,237,230,0.06)]">
-            <span className="font-mono text-[11px] tracking-[0.1em] text-[rgba(240,237,230,0.25)] uppercase">
+          <div className="flex items-center justify-between mt-12 pt-6 border-t border-gray-100">
+            <span className="text-xs text-gray-400">
               &copy; {new Date().getFullYear()} Elixpo
             </span>
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-[#6366f1] animate-[blink_1.5s_step-end_infinite]" />
-              <span className="font-mono text-[11px] tracking-[0.1em] text-[rgba(240,237,230,0.4)]">
+              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+              <span className="text-xs text-gray-500">
                 All systems operational
               </span>
             </div>
@@ -561,10 +510,6 @@ export default function LandingPage() {
         @keyframes ticker {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
-        }
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
         }
       `}</style>
     </div>

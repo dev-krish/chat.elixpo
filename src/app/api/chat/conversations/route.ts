@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { listConversations, deleteConversation } from "@/lib/chat/db";
 import { getAuthenticatedUser } from "@/lib/auth/get-user";
+import { POLLINATIONS_API_KEY } from "@/lib/pollinations";
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,6 +18,7 @@ export async function GET(req: NextRequest) {
     return new Response(JSON.stringify(conversations), {
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${POLLINATIONS_API_KEY}`,
       },
     });
   } catch (error: any) {
